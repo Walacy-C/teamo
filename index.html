@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Você me ama?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #00ffff; /* Ciano */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #btn-sim {
+            background-color: #4CAF50;
+            color: white;
+            z-index: 20;
+        }
+
+        #btn-sim:hover {
+            transform: scale(1.1);
+            background-color: #45a049;
+        }
+
+        #btn-nao {
+            background-color: #f44336;
+            color: white;
+            position: relative;
+            white-space: nowrap;
+            z-index: 20;
+        }
+
+        /* Animação de negação (shaking) */
+        .shake {
+            animation: shakeAnim 0.3s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            50% { transform: translateX(10px) rotate(5deg); }
+            75% { transform: translateX(-10px) rotate(-5deg); }
+        }
+
+        /* Estilo do coração central (agora menor) */
+        .heart {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem; /* Reduzido de 10rem para 5rem */
+            color: #e91e63;
+            animation: pulse 1s infinite;
+            z-index: 100;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        #message {
+            display: none;
+            font-size: 1.8rem;
+            color: #e91e63;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+        <h1 id="question">Você me ama?</h1>
+        
+        <div class="flex justify-center items-center h-48 relative w-full max-w-md mx-auto">
+            <button id="btn-sim" class="btn" onclick="showLove()">Sim</button>
+            <button id="btn-nao" class="btn">Não</button>
+        </div>
+        
+        <div id="message">Eu também te amo ❤️</div>
+    </div>
+
+    <div id="big-heart" class="heart">❤️</div>
+
+    <script>
+        const btnNao = document.getElementById('btn-nao');
+        const btnSim = document.getElementById('btn-sim');
+        const heart = document.getElementById('big-heart');
+        const message = document.getElementById('message');
+        const question = document.getElementById('question');
+
+        let isMoving = false;
+
+        // Função para mover o botão "Não" com animação de negação
+        function handleNaoInteraction() {
+            if (isMoving) return;
+            isMoving = true;
+
+            // Adiciona a classe de balanço (shake)
+            btnNao.classList.add('shake');
+
+            // Espera a animação de balanço terminar antes de fugir
+            setTimeout(() => {
+                const padding = 50;
+                const maxX = window.innerWidth - btnNao.offsetWidth - padding;
+                const maxY = window.innerHeight - btnNao.offsetHeight - padding;
+
+                const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+                btnNao.style.position = 'fixed';
+                btnNao.style.left = randomX + 'px';
+                btnNao.style.top = randomY + 'px';
+                
+                // Remove a classe para poder repetir na próxima vez
+                btnNao.classList.remove('shake');
+                isMoving = false;
+            }, 300); // Duração da animação de shake
+        }
+
+        // Eventos para o botão fugir e balançar
+        btnNao.addEventListener('mouseover', handleNaoInteraction);
+        btnNao.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            handleNaoInteraction();
+        });
+
+        // Função quando clicar no "Sim"
+        function showLove() {
+            heart.style.display = 'block';
+            message.style.display = 'block';
+            btnNao.style.display = 'none';
+            btnSim.style.display = 'none';
+            question.style.display = 'none';
+            
+            // Criar corações menores extras voando
+            for(let i = 0; i < 25; i++) {
+                setTimeout(createSmallHeart, i * 50);
+            }
+        }
+
+        function createSmallHeart() {
+            const smallHeart = document.createElement('div');
+            smallHeart.innerHTML = '❤️';
+            smallHeart.style.position = 'fixed';
+            smallHeart.style.left = Math.random() * 100 + 'vw';
+            smallHeart.style.top = '110vh'; // Começa embaixo
+            smallHeart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            smallHeart.style.zIndex = '150';
+            smallHeart.style.transition = `all ${Math.random() * 2 + 2}s linear`;
+            document.body.appendChild(smallHeart);
+
+            // Animação de subida
+            setTimeout(() => {
+                smallHeart.style.top = '-10vh';
+                smallHeart.style.left = (parseFloat(smallHeart.style.left) + (Math.random() * 20 - 10)) + 'vw';
+                smallHeart.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => {
+                smallHeart.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
+
