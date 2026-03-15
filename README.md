@@ -1,2 +1,1 @@
-# bot
-Yuri-bot
+# amo o José
